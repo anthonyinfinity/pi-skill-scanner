@@ -25,7 +25,7 @@ Run this command:
 Provide the URL of the public Git repository you want to scan.
 
 ```bash
-./scripts/scan-remote.sh <repository-url>
+./scripts/scan-remote.sh <repository-url> [optional: --report]
 ```
 
 ### Example for the AI Agent:
@@ -34,6 +34,12 @@ If the user asks: "Can you check if `https://github.com/some-user/untrusted-skil
 
 ```bash
 ./scripts/scan-remote.sh https://github.com/some-user/untrusted-skill
+```
+
+If the user explicitly asks for a detailed JSON report, append `--report`:
+
+```bash
+./scripts/scan-remote.sh https://github.com/some-user/untrusted-skill --report
 ```
 
 Then, read the output and summarize the findings for the user. Pay special attention to any critical or high-severity issues reported by the scanner.

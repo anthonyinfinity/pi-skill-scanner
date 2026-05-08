@@ -37,6 +37,8 @@ Inside the `pi` interactive interface, you can audit any public GitHub repositor
 
 `pi` will spin up the Docker sandbox, clone the repository safely inside it, run the deterministic security scan, and summarize any critical or high-severity findings for you in the chat.
 
+## Important Disclaimer
+> **No automated tool replaces human review.** This scanner is a best-effort defense-in-depth layer. A "clean" scan result does *not* guarantee that a skill is completely safe, benign, or free of novel vulnerabilities. You must manually review the source code of any script or extension before installing it, as they will execute with your host's user permissions.
 ## Limitations
 - **False Positives:** Static analysis tools flag behavioral patterns. If you scan a legitimate skill whose explicit purpose is web scraping or calling external APIs, the scanner will likely flag it as "Data Exfiltration". Apply context and human judgment to the results.
 - **Public Repositories Only:** To maintain the security boundary, this tool currently only supports public git URLs so that SSH keys and personal access tokens do not need to be mounted into the sandbox.

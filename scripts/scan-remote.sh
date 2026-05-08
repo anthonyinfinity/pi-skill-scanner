@@ -2,11 +2,12 @@
 
 IMAGE_NAME="pi-skill-scanner-env"
 TARGET_URL="$1"
+OUTPUT_REPORT="$2"
 
 # Basic validation
 if [ -z "$TARGET_URL" ]; then
   echo "Error: Please provide a git repository URL."
-  echo "Usage: ./scan-remote.sh <repository-url>"
+  echo "Usage: ./scan-remote.sh <repository-url> [optional: --report]"
   exit 1
 fi
 
@@ -38,7 +39,12 @@ docker run --rm -i "$IMAGE_NAME" /bin/bash -c "
     exit 1
   fi
   
-  echo 'Running cisco-ai-skill-scanner...'
-  # Run scanner
-  skill-scanner scan --lenient /target-repo
+  if [ \"$OUTPUT_REPORT\" == \"--report\" ]; then
+    echo 'Running cisco-ai-skill-scanner and generating report...'
+    skill-scanner scan --lenient -o json /target-repo > /dev/null 2>&1
+    cat scan-report.json
+  else
+    echo 'Running cisco-ai-skill-scanner...'
+    skill-scanner scan --lenient /target-repo
+  fi
 "
