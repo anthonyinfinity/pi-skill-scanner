@@ -39,6 +39,15 @@ Inside the `pi` interactive interface, you can audit any public GitHub repositor
 
 ## Important Disclaimer
 > **No automated tool replaces human review.** This scanner is a best-effort defense-in-depth layer. A "clean" scan result does *not* guarantee that a skill is completely safe, benign, or free of novel vulnerabilities. You must manually review the source code of any script or extension before installing it, as they will execute with your host's user permissions.
+## Security Architecture (The Sandbox)
+To ensure that scanning malicious code doesn't accidentally infect your machine, this skill employs strict containment measures:
+1. **Ephemeral Storage:** Repositories are cloned directly into Docker's ephemeral overlay filesystem. No untrusted files are ever written to your host Mac/PC. The filesystem is destroyed instantly when the scan finishes (`--rm`).
+2. **Non-Root Execution:** The scanner runs as a low-privileged `scanneruser` inside the container.
+3. **Kernel Sandboxing:** The container drops all Linux capabilities (`--cap-drop=ALL`) and blocks privilege escalation (`no-new-privileges`).
+4. **Resource Limits:** The container is restricted to 1 CPU core and 1GB of RAM to prevent denial-of-service (DoS) attacks, such as "zip bombs" or infinite loops in malicious markdown files.
+5. **Pinned Dependencies:** The skill scanner version is pinned to prevent supply chain attacks via the `latest` tag.
+
 ## Limitations
 - **False Positives:** Static analysis tools flag behavioral patterns. If you scan a legitimate skill whose explicit purpose is web scraping or calling external APIs, the scanner will likely flag it as "Data Exfiltration". Apply context and human judgment to the results.
 - **Public Repositories Only:** To maintain the security boundary, this tool currently only supports public git URLs so that SSH keys and personal access tokens do not need to be mounted into the sandbox.
+- **Network Access:** The sandbox requires outbound network access to perform the `git clone`. For maximum security, do not mount any local AWS/GCP credentials or API keys into this environment.

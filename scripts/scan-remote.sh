@@ -30,13 +30,12 @@ echo "Spinning up sandbox to scan: $TARGET_URL"
 # - --rm: Destroy container and ephemeral filesystem immediately after exit
 # - --cap-drop=ALL: Drop all Linux capabilities
 # - --security-opt=no-new-privileges: Prevent privilege escalation via setuid
-# - --network none: Disable network access (after the initial git clone)
-# 
-# Wait, we need network access for 'git clone'. 
-# We will leave default network on, but the container runs as a non-root user.
+# - --memory="1g" / --cpus="1.0": Prevent resource exhaustion/DoS attacks
 docker run --rm -i \
   --cap-drop=ALL \
   --security-opt="no-new-privileges:true" \
+  --memory="1g" \
+  --cpus="1.0" \
   "$IMAGE_NAME" /bin/bash -c "
   echo 'Cloning repository...'
   git clone --depth 1 $TARGET_URL /workspace/target-repo > /dev/null 2>&1
