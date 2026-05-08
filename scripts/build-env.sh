@@ -17,11 +17,19 @@ FROM python:3.10-slim
 # Install git (required for cloning the target repo)
 RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
 
-# Install the Cisco AI Defense Skill Scanner
-RUN pip install --no-cache-dir cisco-ai-skill-scanner
+# Create a non-root user for executing the scans safely
+RUN useradd -m -s /bin/bash scanneruser
 
-# Set a working directory
+# Install the Cisco AI Defense Skill Scanner and pin the exact version 
+# to prevent automated supply chain attacks via the 'latest' tag.
+RUN pip install --no-cache-dir cisco-ai-skill-scanner==2.0.11
+
+# Set a working directory and give the non-root user ownership
 WORKDIR /workspace
+RUN chown scanneruser:scanneruser /workspace
+
+# Switch to the non-root user so the container doesn't run as root
+USER scanneruser
 EOF
 
 echo "Build complete! The local image '$IMAGE_NAME' is ready."
